@@ -8,7 +8,6 @@ A Vagrantfile to make a super straightforward practice environment for RHCE 8 ex
 sudo systemctl start libvirtd
 git clone git@github.com:babarnescocke/Vagrant-RHCE8-Practice.git
 cd Vagrant-RHCE8-Practice/
-ssh-keygen -t rsa -b 4096 -f ./id_rsa -q -N ""
 vagrant plugin install vagrant-libvirt
 vagrant up --provider=libvirt
 vagrant up

@@ -1,6 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-
+system("ssh-keygen -t rsa -b 4096 -f ./id_rsa -q -N """)
 
 Vagrant.configure("2") do |config|
   config.vm.define "masterNode" do |masterNode|
