@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+    - name: create ansible user
+      user:
+        name: ansible
+        password: $6$mysecretsalt$pYGf02hsuplCz8xx02leSOkmwlbZc/snI6Ks9FFQsIDPR9phRWUAgUKJZWSLAuSMh1jKWOeS8Pf1P8vXG.3iS1
+        state: present
+        groups: wheel
+        createhome: yes
+    - name: allow wheel to have passwordless sudo
+      lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+    - name: allow password ssh login
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        regexp: "^PasswordAuthentication no"
+        line: "PasswordAuthentication Yes"
+      notify: restart_sshd
+  handlers:
+    - name: restart_sshd
+      service:
+        name: sshd
+        state: restarted

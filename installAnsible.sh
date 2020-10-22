@@ -1,3 +1,4 @@
 #!/bin/bash
-dnf install -q -y python3-pip && \
-pip3 install -q "ansible>2.9,<2.10"
+# install ansible using pip3 because RHCE 8 is based on Ansible 2.8
+ && \
+ # run as root :(

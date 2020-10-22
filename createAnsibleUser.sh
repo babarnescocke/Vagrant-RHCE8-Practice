@@ -1,3 +1,4 @@
 #!/bin/bash
+# create Ansible user on nodes
 useradd ansible --groups wheel
-echo "ansible ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers
+

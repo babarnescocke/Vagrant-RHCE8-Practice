@@ -1,0 +1,41 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    nodes:
+      - node0
+      - node1
+      - node2
+      - node3
+      - node4
+  tasks:
+    - name: install pip,epel-release, vim
+      yum:
+        name: python3,epel-release,vim
+        state: present
+      notify: install_sshpass
+    - name: pip3 install ansible
+      pip:
+         name: ansible>2.8,<2.9
+    - name: generate keys
+      community.crypto.openssh_keypair:
+        type: ed25519
+        path: /home/vagrant/.ssh/id_ed25519
+        owner: vagrant
+  handlers:
+    - name: install_sshpass
+      yum:
+        name: sshpass
+        state: present
+      notify: pass_ssh_script
+    - name: pass_ssh_script
+      become_user: vagrant
+      shell:
+        cmd: sshpass -p 'ansible' ssh-copy-id -o StrictHostKeyChecking=no ansible@"{{ item  }}"
+      loop: "{{ nodes }}"
+      notify: "ssh-copy-id succeeded"
+    - name: uninstall_sshpass
+      yum:
+        name: sshpass
+        state: absent
+      listen: "ssh-copy-id succeeded"
