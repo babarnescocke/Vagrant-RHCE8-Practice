@@ -1,7 +1,7 @@
 ---
 - hosts: all
   become: yes
-  vars:
+  vars: #needs to be changed if number of nodes is changed in Vagrantfile
     nodes:
       - node0
       - node1
@@ -9,21 +9,21 @@
       - node3
       - node4
   tasks:
-    - name: install pip,epel-release, vim
+    - name: install pip,epel-release, vim #pip is for ansible installation; epel-release allows us to pre-install ssh-keys; vim is just my preferred editor
       yum:
         name: python3,epel-release,vim
         state: present
       notify: install_sshpass
     - name: pip3 install ansible
       pip:
-         name: ansible>2.8,<2.9
+         name: ansible>2.8,<2.9 #per exam guidelines 2.8 is the version for testing
     - name: generate keys
-      community.crypto.openssh_keypair:
+      community.crypto.openssh_keypair: # create keys for vagrant user to pass around for ansible
         type: ed25519
         path: /home/vagrant/.ssh/id_ed25519
         owner: vagrant
   handlers:
-    - name: install_sshpass
+    - name: install_sshpass # allows us to automate sending keys back and forth
       yum:
         name: sshpass
         state: present
@@ -31,10 +31,10 @@
     - name: pass_ssh_script
       become_user: vagrant
       shell:
-        cmd: sshpass -p 'ansible' ssh-copy-id -o StrictHostKeyChecking=no ansible@"{{ item  }}"
+        cmd: sshpass -p 'ansible' ssh-copy-id -o StrictHostKeyChecking=no ansible@"{{ item  }}" # need to turn off hostkey checking ot it fails
       loop: "{{ nodes }}"
       notify: "ssh-copy-id succeeded"
-    - name: uninstall_sshpass
+    - name: uninstall_sshpass # uninstalled right after because its not needed
       yum:
         name: sshpass
         state: absent
